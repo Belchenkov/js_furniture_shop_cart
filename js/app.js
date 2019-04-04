@@ -5,6 +5,7 @@ const clearCartBtn = document.querySelector('.clear-cart');
 const cartOverlay = document.querySelector('.cart-overlay');
 const cartContent = document.querySelector('.cart-content');
 const cartTotal = document.querySelector('.cart-total');
+const cartItems = document.querySelector('.cart-items');
 const productsDOM = document.querySelector('.products-center');
 
 // cart
@@ -83,11 +84,26 @@ class UI {
                     Storage.saveCart(cart);
 
                     // set cart values
+                    this.setCartValues(cart);
                     // display cart item
                     // show the cart
                 });
             }
         });
+    }
+
+    setCartValues(cart) {
+        let tempTotal = 0;
+        let itemsTotal = 0;
+
+        cart.map(item => {
+           tempTotal += item.price * item.amount;
+           itemsTotal += item.amount;
+        });
+
+        cartTotal.innerHTML = parseFloat(tempTotal.toFixed(2));
+        cartItems.innerText = itemsTotal;
+        console.log(cartTotal);
     }
 }
 
