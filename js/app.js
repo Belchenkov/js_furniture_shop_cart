@@ -60,6 +60,18 @@ class UI {
         productsDOM.innerHTML = result;
     }
 
+    setupApp() {
+        cart = Storage.getCart();
+        this.setCartValues(cart);
+        this.populateCart(cart);
+        cartBtn.addEventListener('click', this.showCart);
+        closeCartBtn.addEventListener('click', this.hideCart);
+    }
+
+    populateCart(cart) {
+        cart.forEach(item => this.addCartItem(item));
+    }
+
     getBagButtons() {
         const buttons = [...document.querySelectorAll(".bag-btn")];
         buttonsDOM = buttons;
@@ -141,16 +153,33 @@ class UI {
         cartDOM.classList.remove('showCart');
     }
 
-    setupApp() {
-        cart = Storage.getCart();
+    clearCart = () => {
+        let cartItems = cart.map(item => item.id);
+
+        cartItems.forEach(id => this.removeItem(id));
+
+        while(cartContent.children.length > 0) {
+            cartContent.removeChild(cartContent.children[0]);
+        }
+
+        this.hideCart();
+    };
+
+    removeItem(id) {
+        cart = cart.filter(item => item.id !== id);
         this.setCartValues(cart);
-        this.populateCart(cart);
-        cartBtn.addEventListener('click', this.showCart);
-        closeCartBtn.addEventListener('click', this.hideCart);
+        Storage.saveCart(cart);
+        let button = this.getSingleButton(id);
+        button.disabled = false;
+        button.innerHTML = `<i class="fas fa-shopping-cart"></i> add to cart`;
     }
 
-    populateCart(cart) {
-        cart.forEach(item => this.addCartItem(item));
+    getSingleButton(id) {
+        return buttonsDOM.find(button => button.dataset.id === id);
+    }
+
+    cartLogic() {
+        clearCartBtn.addEventListener('click', this.clearCart);
     }
 }
 
@@ -181,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // setup app
     ui.setupApp();
+    ui.cartLogic();
 
     // get all products
     products.getProducts()
